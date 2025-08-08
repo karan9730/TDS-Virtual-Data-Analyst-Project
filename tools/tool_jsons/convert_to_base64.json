@@ -1,0 +1,24 @@
+{
+  "type": "function",
+  "function": {
+    "name": "convert_to_base64",
+    "description": "Converts an image file in the specified directory to a base64-encoded string.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "file_name": {
+          "type": "string",
+          "description": "The name of the image file to convert (e.g., sample.jpg)."
+        },
+        "directory": {
+          "type": "string",
+          "enum": ["uploads", "outputs"],
+          "description": "The directory where the image file is located. Must be 'uploads' or 'outputs'."
+        }
+      },
+      "required": ["file_name", "directory"],
+      "additionalProperties": false
+    },
+    "strict": true
+  }
+}

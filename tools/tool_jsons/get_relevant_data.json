@@ -1,0 +1,17 @@
+{
+        "type": "function",
+        "function": {
+            "name": "get_relevant_data",
+            "description": "Extracts structured data from an HTML webpage file in outputs directory using a CSS selector.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "file_name": {"type": "string", "description": "Name of the file containing the HTML content"},
+                    "js_selector": {"type": "string", "description": "CSS selector to identify the target data"}
+                },
+                "required": ["file_name", "js_selector"],
+                "additionalProperties": false
+            },
+            "strict": true
+        }
+    }

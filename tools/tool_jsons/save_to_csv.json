@@ -1,0 +1,25 @@
+{
+        "type": "function",
+        "function": {
+            "name": "save_to_csv",
+            "description": "Takes given data and saves it to a CSV file in outputs directory.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "result": {
+                        "type": "object",
+                        "description": "The data dictionary returned by get_relevant_data (must contain a 'data' key)",
+                        "properties": {
+                            "data": {"type": "array", "items": {"type": "string"}}
+                        },
+                        "required": ["data"],
+                        "additionalProperties": false
+                    },
+                    "file_name": {"type": "string", "description": "Name of the CSV file to save the data to"}
+                },
+                "required": ["result", "file_name"],
+                "additionalProperties": false
+            },
+            "strict": true
+        }
+    }
