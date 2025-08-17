@@ -2,21 +2,29 @@
   "type": "function",
   "function": {
     "name": "read_image_file",
-    "description": "Accepts an image file or base64 string and returns a description of its content using a vision model.",
+    "description": "Accepts an image file name or base64 string and returns a description of its content using a vision model. Provide exactly one of 'file_name' or 'b64_string'.",
     "parameters": {
       "type": "object",
       "properties": {
         "file_name": {
-          "type": "string",
-          "description": "Name of the image file (e.g., image1.png). Do NOT include directories."
+          "type": ["string", "null"],
+          "description": "Name of the image file (e.g., image1.png). Do NOT include directories.",
+          "default": null
         },
         "b64_string": {
-          "type": "string",
-          "description": "Base64-encoded string of the image (optional if file_name is provided)."
+          "type": ["string", "null"],
+          "description": "Base64-encoded string of the image (optional if file_name is provided).",
+          "default": null
         },
         "directory": {
           "type": "string",
-          "enum": ["uploads", "outputs"],
+          "enum": [
+            "uploads",
+            "outputs",
+            "/tmp/uploads",
+            "/tmp/outputs"
+          ],
+          "default": "/tmp/uploads",
           "description": "Directory where the image file is stored (if using file_name)."
         }
       },

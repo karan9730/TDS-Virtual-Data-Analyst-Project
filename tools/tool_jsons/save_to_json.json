@@ -2,20 +2,20 @@
   "type": "function",
   "function": {
     "name": "save_to_json",
-    "description": "Saves a stringified JSON object to a .json file in the outputs directory.",
+    "description": "Saves JSON data (string, dict, or list) to a .json file in the outputs directory. Allows case-insensitive '.json' extension.",
     "parameters": {
       "type": "object",
       "properties": {
-        "json_string": {
+        "json_input": {
           "type": "string",
-          "description": "A valid JSON string to be saved to file."
+          "description": "JSON content to save as a string. Python code also accepts dict or list and normalizes internally."
         },
         "file_name": {
           "type": "string",
-          "description": "Filename to save the JSON as (must end with .json)."
+          "description": "Filename to save the JSON as (must end with '.json', case-insensitive)."
         }
       },
-      "required": ["json_string", "file_name"],
+      "required": ["json_input", "file_name"],
       "additionalProperties": false
     },
     "strict": true

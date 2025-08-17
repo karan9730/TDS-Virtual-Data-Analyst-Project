@@ -1,0 +1,17 @@
+{
+        "type": "function",
+        "function": {
+            "name": "scrape_webpage",
+            "description": "Scrapes a website and saves its content to an HTML file in outputs directory.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {"type": "string", "description": "The URL of the website to scrape"},
+                    "output_file": {"type": "string", "description": "The file to save the scraped content"}
+                },
+                "required": ["url", "output_file"],
+                "additionalProperties": false
+            },
+            "strict": true
+        }
+    }

@@ -1,22 +1,35 @@
 def read_text_file(file_name: str, directory: str) -> str:
     import os
 
-    if directory not in ["uploads", "outputs"]:
-        return f"Error: Unsupported directory '{directory}'. Must be 'uploads' or 'outputs'."
+    allowed_extensions = ['.txt', '.csv', '.log', '.md']
+    max_words = 1200
+    max_chars = 8000
+    max_file_size_bytes = 5 * 1024 * 1024  # 5 MB max file size
+
+    if directory not in ["/tmp/uploads", "/tmp/outputs"]:
+        return f"Error: Unsupported directory '{directory}'. Must be '/tmp/uploads' or '/tmp/outputs'."
+
+    ext = os.path.splitext(file_name)[1].lower()
+    # Block common large structured formats to prevent token overload
+    blocked_extensions = ['.html', '.htm', '.xml', '.json', '.js', '.css']
+    if ext in blocked_extensions:
+        return f"Error: Reading files with '{ext}' extension is not supported due to potential token overload. Please use more specific extraction tools."
+
+    if ext not in allowed_extensions:
+        return f"Error: Unsupported file type '{ext}'. Allowed types: {', '.join(allowed_extensions)}"
 
     file_path = os.path.join(directory, file_name)
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+        if os.path.getsize(file_path) > max_file_size_bytes:
+            return f"Error: File '{file_name}' exceeds maximum allowed size of {max_file_size_bytes // (1024*1024)} MB."
 
-        # Always return full content for questions.txt from uploads
-        if directory == "uploads" and file_name == "questions.txt":
+        with open(file_path, "r", encoding="utf-8", errors='replace') as f:
+            content = f.read(max_chars + 1)
+
+        if directory == "/tmp/uploads" and file_name == "questions.txt":
+            # Return full content for questions.txt without truncation
             return content
-
-        # For other files, apply truncation limits
-        max_words = 1500
-        max_chars = 10000
 
         word_count = len(content.split())
         char_count = len(content)

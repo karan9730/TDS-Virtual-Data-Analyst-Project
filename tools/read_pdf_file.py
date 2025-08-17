@@ -9,8 +9,8 @@ def read_pdf_file(file_name: str, directory: str) -> str:
     import os
     import fitz  # type: ignore # PyMuPDF
 
-    if directory not in ["uploads", "outputs"]:
-        return f"Error: Unsupported directory '{directory}'. Must be 'uploads' or 'outputs'."
+    if directory not in ["/tmp/uploads", "/tmp/outputs"]:
+        return f"Error: Unsupported directory '{directory}'. Must be '/tmp/uploads' or '/tmp/outputs'."
 
     file_path = os.path.join(directory, file_name)
 

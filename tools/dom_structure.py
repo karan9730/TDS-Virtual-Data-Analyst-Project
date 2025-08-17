@@ -13,6 +13,10 @@ def extract_dom_structure_with_identifiers(html: str, max_depth: int = 12) -> st
     up to a specified depth (default is 10).
     """
     soup = BeautifulSoup(html, "html.parser")
+
+    if not soup.find():
+        return "No HTML content found."
+
     
     def format_tag(tag):
         parts = [tag.name]
@@ -39,6 +43,6 @@ def extract_dom_structure_with_identifiers(html: str, max_depth: int = 12) -> st
 
 # Optional debug usage
 if __name__ == "__main__":
-    with open("outputs/scraped_content.html", encoding="utf-8") as f:
+    with open("/tmp/outputs/scraped_content.html", encoding="utf-8") as f:
         html = f.read()
     print(extract_dom_structure_with_identifiers(html))

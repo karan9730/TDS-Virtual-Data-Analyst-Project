@@ -1,25 +1,24 @@
 {
-        "type": "function",
-        "function": {
-            "name": "save_to_csv",
-            "description": "Takes given data and saves it to a CSV file in outputs directory.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "result": {
-                        "type": "object",
-                        "description": "The data dictionary returned by get_relevant_data (must contain a 'data' key)",
-                        "properties": {
-                            "data": {"type": "array", "items": {"type": "string"}}
-                        },
-                        "required": ["data"],
-                        "additionalProperties": false
-                    },
-                    "file_name": {"type": "string", "description": "Name of the CSV file to save the data to"}
-                },
-                "required": ["result", "file_name"],
-                "additionalProperties": false
-            },
-            "strict": true
+  "type": "function",
+  "function": {
+    "name": "save_to_csv",
+    "description": "Saves given data to a CSV file in the outputs directory. Accepts either a plain list of strings or an object with a 'data' key containing a list of strings.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of strings to save. If an object with a 'data' key is passed, the 'data' key is used."
+        },
+        "file_name": {
+          "type": "string",
+          "description": "Name of the CSV file to save the data to."
         }
-    }
+      },
+      "required": ["data", "file_name"],
+      "additionalProperties": false
+    },
+    "strict": true
+  }
+}

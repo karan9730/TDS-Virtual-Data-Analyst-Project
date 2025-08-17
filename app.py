@@ -22,14 +22,19 @@ from flask_cors import CORS # type: ignore
 from werkzeug.utils import secure_filename # type: ignore
 
 from llm_conversation import run_conversation  # New orchestration logic
+from utils.formulate_response import prepare_response  # Utility to format final response
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+UPLOAD_FOLDER = "/tmp/uploads"
+OUTPUT_FOLDER = "/tmp/outputs"
 
-@app.route("/health")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+
+@app.route("/")
 def health():
     return "OK", 200
 
@@ -38,8 +43,9 @@ def handle_query():
     if not request.files:
         return jsonify({"error": "No files uploaded"}), 400
 
-    for filename, file in request.files.items():
-        safe_name = secure_filename(filename)
+    for field_name, file in request.files.items():
+        # Use the actual file name, not the form field name
+        safe_name = secure_filename(file.filename)
         file_path = os.path.join(UPLOAD_FOLDER, safe_name)
         file.save(file_path)
 
@@ -49,10 +55,10 @@ def handle_query():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    return jsonify({
-        "status": "complete",
-        "final_answer": final_answer
-    })
+    if final_answer:
+        response_json = prepare_response(final_answer)
+
+    return response_json, 200
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 7860))

@@ -1,60 +1,83 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#    "google-generativeai",
+#   "google-generativeai",
 # ]
 # ///
 
 import os
 import base64
 import tempfile
-import google.generativeai as genai # type: ignore
-  # type: ignore # Make sure GENAI_API_KEY is set in env
+import google.generativeai as genai  # type: ignore
+import binascii
 
 def get_image_description(image_bytes: bytes, suffix: str = ".png") -> str:
-    client = genai.Client(api_key=os.getenv("GENAI_API_KEY"))
+    genai.configure(api_key=os.getenv("GENAI_API_KEY"))
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix, dir="/tmp") as tmp_file:
         tmp_file.write(image_bytes)
         tmp_file_path = tmp_file.name
 
     try:
-        uploaded_file = client.files.upload(file=tmp_file_path)
-        result = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=[
+        uploaded_file = genai.upload_file(tmp_file_path)
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        result = model.generate_content(
+            [
                 uploaded_file,
                 "Describe the content of this image in detail, focusing on any text, objects, or relevant features that could help answer questions about it."
             ]
         )
         return result.text
     finally:
-        os.remove(tmp_file_path)
-
+        try:
+            os.remove(tmp_file_path)
+        except Exception:
+            pass
 
 def read_image_file(file_name=None, b64_string=None, directory="uploads"):
-    if not file_name and not b64_string:
-        return "Error: Provide either 'file_name' or 'b64_string'."
+    # Normalize directory input to full absolute path
+    dir_map = {
+        "uploads": "/tmp/uploads",
+        "/tmp/uploads": "/tmp/uploads",
+        "outputs": "/tmp/outputs",
+        "/tmp/outputs": "/tmp/outputs",
+    }
 
-    if directory not in ["uploads", "outputs"]:
-        return f"Error: Unsupported directory '{directory}'. Must be 'uploads' or 'outputs'."
+    directory = dir_map.get(directory)
+    if not directory:
+        return "Error: Unsupported directory. Must be '/tmp/uploads', '/tmp/outputs', 'uploads', or 'outputs'."
+
+    if (file_name and b64_string) or (not file_name and not b64_string):
+        return "Error: Provide exactly one of 'file_name' or 'b64_string'."
 
     try:
         if file_name:
             file_path = os.path.join(directory, file_name)
+            if not os.path.isfile(file_path):
+                return f"Error: File not found: {file_path}"
+
             suffix = os.path.splitext(file_name)[-1] or ".png"
             with open(file_path, "rb") as f:
                 image_bytes = f.read()
 
-        elif b64_string:
+        else:  # b64_string provided
             if b64_string.startswith("data:image/"):
-                header, b64_string = b64_string.split(",", 1)
-                # Optional: extract file extension from MIME type
-                suffix = "." + header.split("/")[1].split(";")[0]
+                try:
+                    header, b64_data = b64_string.split(",", 1)
+                    suffix = "." + header.split("/")[1].split(";")[0]
+                    # Simple whitelist for suffixes, fallback to .png
+                    if suffix.lower() not in [".png", ".jpeg", ".jpg", ".gif", ".bmp", ".webp"]:
+                        suffix = ".png"
+                    b64_string = b64_data
+                except Exception:
+                    suffix = ".png"
             else:
                 suffix = ".png"
 
-            image_bytes = base64.b64decode(b64_string)
+            try:
+                image_bytes = base64.b64decode(b64_string, validate=True)
+            except binascii.Error:
+                return "Error: Provided base64 string is invalid."
 
         return get_image_description(image_bytes, suffix)
 

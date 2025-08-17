@@ -12,8 +12,8 @@
         },
         "directory": {
           "type": "string",
-          "enum": ["uploads", "outputs"],
-          "description": "The directory where the image file is located. Must be 'uploads' or 'outputs'."
+          "enum": ["/tmp/uploads", "/tmp/outputs"],
+          "description": "The directory where the image file is located. Must be '/tmp/uploads' or '/tmp/outputs'."
         }
       },
       "required": ["file_name", "directory"],

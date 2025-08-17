@@ -1,0 +1,26 @@
+{
+  "type": "function",
+  "function": {
+    "name": "execute_code",
+    "description": "Executes a given Python code string safely with a timeout limit and returns the output or errors.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Python code to execute. Should be safe and self-contained."
+        },
+        "timeout_sec": {
+          "type": "integer",
+          "description": "Maximum time allowed for code execution in seconds. Defaults to 15 seconds. Hard cap is 30 seconds.",
+          "minimum": 1,
+          "maximum": 30,
+          "default": 15
+        }
+      },
+    "required": ["code", "timeout_sec"],
+      "additionalProperties": false
+    },
+    "strict": true
+  }
+}

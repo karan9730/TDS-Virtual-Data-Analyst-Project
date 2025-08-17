@@ -2,7 +2,7 @@
   "type": "function",
   "function": {
     "name": "read_csv_file",
-    "description": "Reads a CSV file and returns the first 10 rows as plain text.",
+    "description": "Reads a CSV file from the uploads or outputs directory and returns the first 10 rows as plain text.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -10,13 +10,13 @@
           "type": "string",
           "description": "Name of the CSV file, e.g., data.csv"
         },
-        "directory": {
+        "directory_name": {
           "type": "string",
           "enum": ["uploads", "outputs"],
           "description": "Directory where the file is located."
         }
       },
-      "required": ["file_name", "directory"],
+      "required": ["file_name", "directory_name"],
       "additionalProperties": false
     },
     "strict": true

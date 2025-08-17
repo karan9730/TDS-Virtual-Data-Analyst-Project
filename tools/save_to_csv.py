@@ -5,37 +5,27 @@
 # ]
 # ///
 
-import pandas as pd
+import pandas as pd  # type: ignore
 import os
-from typing import Union, List, Dict
+from typing import Any, Union, List, Dict
 
-def save_to_csv(result: Dict[str, Union[str, List[str]]], file_name: str = "output.csv") -> str:
-    """
-    Saves extracted data (from get_relevant_data) to a CSV file.
-    
-    Parameters:
-        result (dict): Expected to contain a key 'data' with a list of strings.
-        file_name (str): The name of the file to save to. Defaults to 'output.csv'.
+def save_to_csv(data, file_name):
+    import csv, os
 
-    Returns:
-        str: Message confirming the file save.
-    """
-    # Basic format validation
-    if "data" not in result:
-        return "Error: No 'data' key found in input. Nothing was saved."
+    # Normalize input: if it's an object with a 'data' key, extract it
+    if isinstance(data, dict) and "data" in data:
+        data = data["data"]
 
-    raw_rows = result["data"]
-    if not isinstance(raw_rows, list) or not all(isinstance(row, str) for row in raw_rows):
-        return "Error: 'data' must be a list of strings."
+    # Ensure outputs directory exists
+    os.makedirs("outputs", exist_ok=True)
+    file_path = os.path.join("outputs", file_name)
 
-    # Convert rows into list of list (split using whitespace or multiple spaces)
-    parsed_rows = [r.split() for r in raw_rows]
-
-    # Determine the output path
-    output_path = os.path.join("outputs", file_name)
-
-    # Create DataFrame and save
-    df = pd.DataFrame(parsed_rows)
-    df.to_csv(output_path, index=False, header=False)
-
-    return f"Data successfully saved to {output_path}"
+    # Write to CSV
+    with open(file_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        for row in data:
+            # Wrap row in list if it's a single string
+            if isinstance(row, str):
+                writer.writerow([row])
+            else:
+                writer.writerow(row)
